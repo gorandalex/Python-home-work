@@ -42,22 +42,20 @@ def move_file_to_folder(directory, folder_name, extension):
             file.rename(new_path)
             if folder_name.name == 'archives':
                 unzip_file(folder_name, new_path)
-    for f in directory.iterdir():
-        if f.is_dir():
-            if f in non_checked_folders:
-                continue
-            move_file_to_folder(f, folder_name, extension)
+    for file in directory.iterdir():
+        if file.is_dir():
+            if not file in non_checked_folders:
+                move_file_to_folder(f, folder_name, extension)
+            
 
 def rename_files(directory, new_path_directory = None):
-    for f in directory.iterdir():
-        if Path.is_dir(f):
-            if f in non_checked_folders:    #не перевыряємо каталог, як що він вже відсортований                 
-                continue
-            else:
-                name_folder = normalize(f)
-                if name_folder != f.name:   #як що треба змінити ім'я каталогу
-                    if new_path_directory == None:
-                        new_path = Path.joinpath(f.parent, name_folder)
+    for file in directory.iterdir():
+        if Path.is_dir(file):
+            if not file in non_checked_folders:    #не перевыряємо каталог, як що він вже відсортований                 
+                name_folder = normalize(file)
+                if name_folder != file.name:   #як що треба змінити ім'я каталогу
+                    if new_path_directory is None:
+                        new_path = Path.joinpath(file.parent, name_folder)
                     else:
                         new_path = Path.joinpath(new_path_directory, name_folder)
                     if not Path.exists(new_path):
@@ -65,17 +63,17 @@ def rename_files(directory, new_path_directory = None):
                     if not new_path in non_checked_folders:
                         non_checked_folders.append(new_path)
                 else:
-                    new_path = f
-                rename_files(f, new_path)
-                if len(list(f.glob('*'))) == 0:
-                    f.rmdir()       
+                    new_path = file
+                rename_files(file, new_path)
+                if not list(file.glob('*')):
+                    file.rmdir()       
         else:
-            new_name = normalize(f)
-            if new_name != f.name or directory != new_path_directory:     #як що треба змінити ім'я файлу або директорію
-                if new_path_directory == None:
-                    f.rename(Path.joinpath(f.parent, new_name))
+            new_name = normalize(file)
+            if new_name != file.name or directory != new_path_directory:     #як що треба змінити ім'я файлу або директорію
+                if new_path_directory is None:
+                    file.rename(Path.joinpath(file.parent, new_name))
                 else:
-                    f.rename(Path.joinpath(new_path_directory, new_name))
+                    file.rename(Path.joinpath(new_path_directory, new_name))
 
 
 
@@ -99,7 +97,7 @@ def main():
         print('Enter path to folder which should be cleaned')
         exit()
     path = sys.argv[1]
-    directory = Path(path_directory)
+    directory = Path(path)
     if not directory.is_dir():
         path('Path incorrect')
         exit()
