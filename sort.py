@@ -45,7 +45,7 @@ def move_file_to_folder(directory, folder_name, extension):
     for file in directory.iterdir():
         if file.is_dir():
             if not file in non_checked_folders:
-                move_file_to_folder(f, folder_name, extension)
+                move_file_to_folder(file, folder_name, extension)
             
 
 def rename_files(directory, new_path_directory = None):
